@@ -137,4 +137,10 @@ UserSchema.methods = {
   },
 }
 
+UserSchema.statics = {
+  findByEmail(email) {
+    return this.findOne({ email }).exec()
+  },
+}
+
 mongoose.model('User', UserSchema)
