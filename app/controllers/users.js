@@ -46,3 +46,24 @@ exports.create = (req, res, next) => {
     })
     .catch(next)
 }
+
+// 登录
+exports.login = (req, res, next) => {
+  const email = req.body.email
+  const password = req.body.password
+  checkEmail(email)
+    .then(User.findByEmail.bind(User))
+    .then(user => {
+      if (!user || !user.authenticate(password)) {
+        throw new UnprocessableEntityError('用户名或密码错误')
+      }
+      return user
+    })
+    .then(user => {
+      const userObject = user.toClient()
+      res.fjson(Object.assign({}, userObject, {
+        token: jwt.sign(userObject, config.jwtSecretKey),
+      }))
+    })
+    .catch(next)
+}

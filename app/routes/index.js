@@ -1,6 +1,7 @@
 'use strict'
 
 const users = require('./users')
+const userController = require('../controllers/users')
 const formatJsonResponse = require('../middleware/formatJsonResponse')
 const NotFoundError = require('../errors/NotFoundError')
 const UnprocessableEntityError = require('../errors/UnprocessableEntityError')
@@ -30,6 +31,7 @@ module.exports = function routes(app) {
     res.fjson({ you: 'are welcome!' })
   })
 
+  app.post('/login', userController.login)
   app.use('/users', users)
 
   // catch 404 and forward to error handler
