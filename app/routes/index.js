@@ -1,6 +1,7 @@
 'use strict'
 
 const users = require('./users')
+const categories = require('./categories')
 const userController = require('../controllers/users')
 const formatJsonResponse = require('../middleware/formatJsonResponse')
 const NotFoundError = require('../errors/NotFoundError')
@@ -33,6 +34,7 @@ module.exports = function routes(app) {
 
   app.post('/login', userController.login)
   app.use('/users', users)
+  app.use('/categories', categories)
 
   // catch 404 and forward to error handler
   app.use((req, res, next) => {
