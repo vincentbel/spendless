@@ -72,3 +72,17 @@ exports.createSub = (req, res, next) => {
     })
     .catch(next)
 }
+
+// list of populated categories
+exports.list = (req, res, next) => {
+  return MainCategory.list({})
+    .then(categories => {
+      res.fjson({
+        itemCount: categories.length,
+        items: categories.map(category => Object.assign({}, category.toClient(), {
+          subCategories: category.subCategories.map(sub => sub.toClient()),
+        })),
+      })
+    })
+    .catch(next)
+}

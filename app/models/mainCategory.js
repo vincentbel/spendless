@@ -62,6 +62,35 @@ MainCategorySchema.statics = {
   findByName(name) {
     return this.findOne({ name }).exec()
   },
+
+  /**
+   * List
+   *
+   * @param {Object} options
+   * {
+   *   filters: 过滤选项
+   *   perPage: 每页几个条目
+   *   page: 第几页（从 0 开始）
+   *   sort: 排序字段
+   *   order: 排序方式：ASC 升序， DESC 降序
+   * }
+   *
+   * @return {Promise} list of the result models
+   */
+  list(options) {
+    const filters = options.filters || {}
+    const perPage = options.perPage || 1000
+    const page = options.page || 0
+    const sort = options.sort || 'createdAt'
+    const order = (options.order && options.order === 'DESC') ? -1 : 1
+
+    return this.find(filters)
+      .sort({ [sort]: order })
+      .limit(perPage)
+      .skip(perPage * page)
+      .populate('subCategories')
+      .exec()
+  },
 }
 
 mongoose.model('MainCategory', MainCategorySchema)
