@@ -6,9 +6,9 @@
 'use strict'
 
 const router = require('express').Router() // eslint-disable-line new-cap
-const mainCategoryController = require('../controllers/mainCategories')
+const categoryController = require('../controllers/categories')
 
-router.route('/main')
-  .post(mainCategoryController.create)
+router.post('/', categoryController.createMain)
+router.post('/:mainCategoryId', categoryController.createSub)
 
 module.exports = router

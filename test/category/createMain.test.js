@@ -16,12 +16,12 @@ const agent = request.agent(app)
 import mongoose from 'mongoose'
 const MainCategory = mongoose.model('MainCategory')
 
-describe('POST /categories/main', () => {
+describe('POST /categories', () => {
   describe('with valid parameter', () => {
     const name = 'daily'
     it('should response with 201', done => {
       agent
-        .post('/categories/main')
+        .post('/categories')
         .set('Content-Type', 'application/json')
         .send({ name })
         .expect(201)
@@ -43,7 +43,7 @@ describe('POST /categories/main', () => {
     const name = 'daily'
     before(done => {
       agent
-        .post('/categories/main')
+        .post('/categories')
         .set('Content-Type', 'application/json')
         .send({ name })
         .expect(201)
@@ -52,7 +52,7 @@ describe('POST /categories/main', () => {
 
     it('should response with 409 error', done => {
       agent
-        .post('/categories/main')
+        .post('/categories')
         .set('Content-Type', 'application/json')
         .send({ name })
         .expect(409)
@@ -63,7 +63,7 @@ describe('POST /categories/main', () => {
 
           const error = body.error
           expect(error).to.have.property('code', 409)
-          expect(error).to.have.property('message', `一级菜单: ${name} 已存在`)
+          expect(error).to.have.property('message', `一级类别: ${name} 已存在`)
         })
         .end(done)
     })

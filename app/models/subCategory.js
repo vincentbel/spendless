@@ -9,11 +9,11 @@ const Schema = mongoose.Schema
 
 
 /**
- * MainCategory Schema
+ * SubCategory Schema
  */
-const MainCategorySchema = new Schema({
+const SubCategorySchema = new Schema({
   name: { type: String, unique: true },
-  subCategories: [{ type: Schema.Types.ObjectId, ref: 'SubCategory' }],
+  star: { type: Boolean, default: false },
   createdAt: { type: Date },
   updatedAt: { type: Date },
 })
@@ -21,7 +21,7 @@ const MainCategorySchema = new Schema({
 /**
  * pre
  */
-MainCategorySchema.pre('save', function updateCreatedAndUpdatedTime(next) {
+SubCategorySchema.pre('save', function updateCreatedAndUpdatedTime(next) {
   const now = new Date()
   this.updatedAt = now
   if (!this.createdAt) {
@@ -34,15 +34,15 @@ MainCategorySchema.pre('save', function updateCreatedAndUpdatedTime(next) {
  * Validations
  */
 
-MainCategorySchema.path('name').validate(name => {
+SubCategorySchema.path('name').validate(name => {
   return name && name.length
-}, '一级类别名称不能为空')
+}, '类别名称不能为空')
 
 /**
  * Methods
  */
 
-MainCategorySchema.methods = {
+SubCategorySchema.methods = {
   toClient() {
     const obj = this.toObject()
 
@@ -58,10 +58,10 @@ MainCategorySchema.methods = {
  * Statics
  */
 
-MainCategorySchema.statics = {
+SubCategorySchema.statics = {
   findByName(name) {
     return this.findOne({ name }).exec()
   },
 }
 
-mongoose.model('MainCategory', MainCategorySchema)
+mongoose.model('SubCategory', SubCategorySchema)
