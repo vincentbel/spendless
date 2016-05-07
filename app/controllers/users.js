@@ -18,7 +18,7 @@ function checkPassword(password) {
   if (!password || !password.length) {
     return Promise.reject(new UnprocessableEntityError('密码不能为空'))
   }
-  if (password.length <= 6) {
+  if (password.length < 6) {
     return Promise.reject(new UnprocessableEntityError('密码长度至少为6位'))
   }
   return Promise.resolve(password)

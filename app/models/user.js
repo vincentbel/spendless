@@ -46,7 +46,7 @@ UserSchema.path('email').validate(email => {
 }, '邮箱格式不正确')
 
 UserSchema.path('username').validate(username => {
-  return validatePresenceOf(validatePresenceOf)
+  return validatePresenceOf(username)
 }, '用户名不能为空')
 
 /**
