@@ -79,4 +79,31 @@ AccountSchema.methods = {
   },
 }
 
+/**
+ * Statics
+ */
+
+AccountSchema.statics = {
+
+  /**
+   * List
+   *
+   * @param {ObjectId} userId 用户id
+   * @param {Object} filters 过滤选项
+   * @param {String} sort 排序字段
+   * @param {Number} perPage 每页几个条目
+   * @param {Number} page 第几页（从 0 开始）
+   * @param {String} order 排序方式：ASC 升序， DESC 降序
+   * @returns {Promise} list of the result models
+   */
+  list(userId, { filters = {}, sort = 'createdAt', perPage = 30, page = 0, order = 'DESC' } = {}) {
+    const orderNumber = (order === 'DESC') ? 1 : -1
+    return this.find(Object.assign({}, filters, { user: userId }))
+      .sort({ [sort]: orderNumber })
+      .limit(perPage)
+      .skip(perPage * page)
+      .exec()
+  },
+}
+
 mongoose.model('Account', AccountSchema)

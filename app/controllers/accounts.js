@@ -21,3 +21,12 @@ exports.create = (req, res, next) => {
     .then(accountModel => res.status(201).fjson(accountModel.toClient()))
     .catch(next)
 }
+
+exports.list = (req, res, next) => {
+  return Account.list(req.user.id)
+    .then(accounts => res.fjson({
+      itemCount: accounts.length,
+      items: accounts.map(account => account.toClient()),
+    }))
+    .catch(next)
+}
