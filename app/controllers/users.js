@@ -2,11 +2,35 @@
 
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
+const Account = mongoose.model('Account')
+const MainCategory = mongoose.model('MainCategory')
+const SubCategory = mongoose.model('SubCategory')
 const jwt = require('jsonwebtoken')
 const config = require('../../config/config')
 const UnprocessableEntityError = require('../errors/UnprocessableEntityError')
 const ConflictError = require('../errors/ConflictError')
 const validator = require('validator')
+const commonAccounts = require('../data/commonAccounts.json')
+const commonCategories = require('../data/commonCategories.json')
+
+function createCommonAccountsForNewUser(userId) {
+  return Promise.all(commonAccounts.map(commonAccount =>
+    new Account(Object.assign({}, commonAccount, { user: userId })).save()
+  ))
+}
+
+function createCommonCategoriesForNewUser(userId) {
+  const categoryPromises = commonCategories.map(category => {
+    const subPromises = category.subCategories.map(sub => new SubCategory(sub).save())
+    return Promise.all(subPromises)
+      .then(subs => new MainCategory({
+        name: category.name,
+        user: userId,
+        subCategories: subs.map(sub => sub._id),
+      }).save())
+  })
+  return Promise.all(categoryPromises)
+}
 
 function checkEmail(email) {
   return validator.isEmail(email) ?
@@ -37,6 +61,12 @@ exports.create = (req, res, next) => {
       }
       return new User(req.body).save()
     })
+    .then(user => Promise.all([
+      createCommonAccountsForNewUser(user._id),
+      createCommonCategoriesForNewUser(user._id),
+    ])
+      .then(() => user)
+    )
     .then(user => {
       const userObject = user.toClient()
 
