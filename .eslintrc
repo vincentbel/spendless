@@ -10,19 +10,8 @@
     "classes": true
   },
   "rules": {
-    "arrow-body-style": 0,
     "no-console": 0,
-    "semi": [2, "never"],
-    "space-before-function-paren": [2, {
-      "anonymous": "always",
-      "named": "never"
-    }],
-    "valid-jsdoc": 2
-  },
-  "settings": {
-    "import/parser": "babel-eslint",
-    "import/resolve": {
-      moduleDirectory: ["node_modules"]
-    }
+    "no-underscore-dangle": 0,
+    "semi": [2, "never"]
   }
 }
