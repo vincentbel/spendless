@@ -12,7 +12,7 @@ const Schema = mongoose.Schema
  * SubCategory Schema
  */
 const SubCategorySchema = new Schema({
-  name: { type: String, unique: true },
+  name: { type: String },
   star: { type: Boolean, default: false },
   createdAt: { type: Date },
   updatedAt: { type: Date },

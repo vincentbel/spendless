@@ -12,7 +12,8 @@ const Schema = mongoose.Schema
  * MainCategory Schema
  */
 const MainCategorySchema = new Schema({
-  name: { type: String, unique: true },
+  name: { type: String },
+  user: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   subCategories: [{ type: Schema.Types.ObjectId, ref: 'SubCategory' }],
   createdAt: { type: Date },
   updatedAt: { type: Date },
@@ -44,13 +45,25 @@ MainCategorySchema.path('name').validate(name => {
 
 MainCategorySchema.methods = {
   toClient() {
-    const obj = this.toObject()
+    const mainCategory = this.toObject()
 
-    obj.id = obj._id
-    delete obj._id
-    delete obj.__v
+    // call user.toClient if user field is populated
+    const user = this.user
+    if (user && user.toClient) {
+      mainCategory.user = user.toClient()
+    }
 
-    return obj
+    // call subCategory.toClient if subCategories field is populated
+    const subCategories = this.subCategories
+    if (subCategories && subCategories.length && subCategories[0].toClient) {
+      mainCategory.subCategories = subCategories.map(sub => sub.toClient())
+    }
+
+    mainCategory.id = mainCategory._id
+    delete mainCategory._id
+    delete mainCategory.__v
+
+    return mainCategory
   },
 }
 
@@ -64,30 +77,18 @@ MainCategorySchema.statics = {
   },
 
   /**
-   * List
+   * List By User Id
    *
-   * @param {Object} options
-   * {
-   *   filters: 过滤选项
-   *   perPage: 每页几个条目
-   *   page: 第几页（从 0 开始）
-   *   sort: 排序字段
-   *   order: 排序方式：ASC 升序， DESC 降序
-   * }
-   *
-   * @return {Promise} list of the result models
+   * @param {ObjectId} userId 用户id
+   * @param {Object} filters 过滤选项
+   * @param {String} sort 排序字段
+   * @param {String} order 排序方式：ASC 升序， DESC 降序
+   * @returns {Promise} list of the result models
    */
-  list(options) {
-    const filters = options.filters || {}
-    const perPage = options.perPage || 1000
-    const page = options.page || 0
-    const sort = options.sort || 'createdAt'
-    const order = (options.order && options.order === 'DESC') ? -1 : 1
-
-    return this.find(filters)
-      .sort({ [sort]: order })
-      .limit(perPage)
-      .skip(perPage * page)
+  listByUserId(userId, { filters = {}, sort = 'createdAt', order = 'DESC' } = {}) {
+    const orderNumber = (order === 'DESC') ? 1 : -1
+    return this.find(Object.assign({}, filters, { user: userId }))
+      .sort({ [sort]: orderNumber })
       .populate('subCategories')
       .exec()
   },
